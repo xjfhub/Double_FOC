@@ -30,7 +30,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "arm_math.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -109,21 +109,26 @@ int main(void)
   HAL_TIMEx_PWMN_Start(&htim1, TIM_CHANNEL_1);
   HAL_TIMEx_PWMN_Start(&htim1, TIM_CHANNEL_2);
   HAL_TIMEx_PWMN_Start(&htim1, TIM_CHANNEL_3);
+
   HAL_TIM_PWM_Start(&htim8, TIM_CHANNEL_1);
   HAL_TIM_PWM_Start(&htim8, TIM_CHANNEL_2);
   HAL_TIM_PWM_Start(&htim8, TIM_CHANNEL_3);
   HAL_TIMEx_PWMN_Start(&htim8, TIM_CHANNEL_1);
   HAL_TIMEx_PWMN_Start(&htim8, TIM_CHANNEL_2);
   HAL_TIMEx_PWMN_Start(&htim8, TIM_CHANNEL_3);
+
   __HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_1, 4000);
   __HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_2, 4000);
   __HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_3, 4000);
+
   __HAL_TIM_SetCompare(&htim8, TIM_CHANNEL_1, 4000);
   __HAL_TIM_SetCompare(&htim8, TIM_CHANNEL_2, 4000);
   __HAL_TIM_SetCompare(&htim8, TIM_CHANNEL_3, 4000);
-  HAL_TIM_Base_Start(&htim2);
 
-  HAL_ADC_Start_DMA(&hadc1, g_adc_buff, 7); //�?????启DMA
+  HAL_TIM_Base_Start(&htim2);
+  HAL_TIM_Base_Start_IT(&htim2);
+
+  HAL_ADC_Start_DMA(&hadc1, g_adc_buff, 7); //�??????????启DMA
 
   /* USER CODE END 2 */
 
@@ -131,62 +136,21 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+//	HAL_GPIO_TogglePin(DC_GPIO_Port, DC_Pin);
+//	HAL_GPIO_TogglePin(DC_GPIO_Port, DC_Pin);
+//	HAL_GPIO_TogglePin(DC_GPIO_Port, DC_Pin);
+//	HAL_GPIO_TogglePin(DC_GPIO_Port, DC_Pin);
+	HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_SET);
+	cnt = (cnt+1)%1000;
+	__HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_1, 4000 + 500*arm_cos_f32((cnt + 0  )*0.00628));
+	__HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_2, 4000 + 500*arm_cos_f32((cnt + 333)*0.00628));
+	__HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_3, 4000 + 500*arm_cos_f32((cnt + 667)*0.00628));
 	printf("adc:[%4d %4d %4d %4d %4d %4d %4d]\n",
 			g_adc_buff[0],g_adc_buff[1],g_adc_buff[2],g_adc_buff[3],g_adc_buff[4],g_adc_buff[5],g_adc_buff[6]);
-	cnt = (cnt+1)%6;
-	switch(cnt)
-	{
-	case 0:
-	{
-	  __HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_1, 5000);
-	  __HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_2, 3000);
-	  __HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_3, 3000);
-	  break;
-	}
-	case 1:
-	{
-	  __HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_1, 5000);
-	  __HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_2, 5000);
-	  __HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_3, 3000);
-	  break;
-	}
-	case 2:
-	{
-	  __HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_1, 3000);
-	  __HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_2, 5000);
-	  __HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_3, 3000);
-	  break;
-	}
-	case 3:
-	{
-	  __HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_1, 3000);
-	  __HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_2, 5000);
-	  __HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_3, 5000);
-	  break;
-	}
-	case 4:
-	{
-	  __HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_1, 3000);
-	  __HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_2, 3000);
-	  __HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_3, 5000);
-	  break;
-	}
-	case 5:
-	{
-	  __HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_1, 5000);
-	  __HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_2, 3000);
-	  __HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_3, 5000);
-	  break;
-	}
-	default:
-	{
-	  __HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_1, 4000);
-	  __HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_2, 4000);
-	  __HAL_TIM_SetCompare(&htim1, TIM_CHANNEL_3, 4000);
-	  break;
-	}
-	}
-	HAL_Delay(500);
+	HAL_Delay(1);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
