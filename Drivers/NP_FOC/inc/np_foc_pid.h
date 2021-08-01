@@ -11,7 +11,7 @@
 #ifndef NP_FOC_PID_H
 #define NP_FOC_PID_H
 
-/* 宏函数限幅 */
+/* 限幅宏函数 */
 #define LIMIT(input,min,max)    input>min?(input<max?input:max):min  
 /* 单输入单输出PID控制结构体 */
 typedef struct

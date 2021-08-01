@@ -14,9 +14,9 @@
 #ifndef PI
     #define PI 3.1415926f
 #endif
-#define PHASE_A PI*0/3
-#define PHASE_B PI*2/3
-#define PHASE_C PI*4/3
+#define PHASE_A (PI*0/3)
+#define PHASE_B (PI*2/3)
+#define PHASE_C (PI*4/3)
 
 /* 相位基量表示法 */
 typedef struct
