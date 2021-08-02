@@ -23,9 +23,11 @@ typedef struct
 /* NP_FOC控制反馈量 */
 typedef struct
 {
+	int encoder_cnt;
 	float angle;		   //角度	范围：0-2π
-	float phase;		   //电角度	范围：0-2π
 	float speed;		   //角速度
+	float phase;		   //电角度	范围：0-2π
+	int adc[3];
 	basis_typedef current; //反馈电流
 } feedback_typedef;
 
@@ -85,11 +87,10 @@ typedef struct
 	basis_typedef expect_voltage; //期望电压
 	output_typedef output;
 
-	void (*collect_current)(basis_typedef *current); //采集电流
-	void (*collect_phase)(float *phase);			 //采集相位
-	void (*collect_speed)(float *speed);			 //采集相位
-	void (*svpwm_out)(basis_typedef *pwm);			 //SVPWM输出
-
+	void (*collect_current)(basis_typedef*); //采集电流
+	void (*collect_phase)(float*);			 //采集相位
+	void (*collect_speed)(float*);			 //采集相位
+	void (*svpwm_out)(output_typedef);			 //SVPWM输出
 } NP_FOC_typedef;
 
 /* 控制模式 */
@@ -101,5 +102,7 @@ enum MODE
 	ANGLE_MODE,	   //角度控制
 	POWER_MODE	   //功率控制
 };
+extern NP_FOC_typedef np1;
+extern NP_FOC_typedef np2;
 
 #endif

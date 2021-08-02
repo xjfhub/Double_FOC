@@ -6,8 +6,8 @@
  */
 #include "np_foc_math.h"
 
-float (*msine)(float modulus, float phase);
-float (*mcosine)(float modulus, float phase);
+float (*msine)(float, float);
+float (*mcosine)(float, float);
 
 /**
  * @brief: 把极坐标转化为三相基底表示

@@ -10,6 +10,9 @@
  */
 #include "np_foc.h"
 
+NP_FOC_typedef np1;
+NP_FOC_typedef np2;
+
 /**
  * @brief 
  * 

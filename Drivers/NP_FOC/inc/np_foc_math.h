@@ -33,8 +33,8 @@ typedef struct
 	float phase;
 } polar_typedef;
 
-extern float (*msine)(float modulus, float phase);			//正弦函数
-extern float (*mcosine)(float modulus, float phase);		//余弦函数
+extern float (*msine)(float, float);			//正弦函数
+extern float (*mcosine)(float, float);		//余弦函数
 
 basis_typedef polar_to_basis(float modulus, float phase);
 

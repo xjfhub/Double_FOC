@@ -13,10 +13,8 @@
 #include "main.h"
 #include "np_foc.h"
 
-extern NP_FOC_typedef np1;
-extern NP_FOC_typedef np2;
 
-void np_foc_init(NP_FOC_typedef *np);
+void np_foc_init(void);
 
 
 #endif
