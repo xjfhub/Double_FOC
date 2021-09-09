@@ -15,6 +15,7 @@
 
 
 void np_foc_init(void);
+void pwm_output(TIM_HandleTypeDef *htim, output_typedef output);
 
 
 #endif

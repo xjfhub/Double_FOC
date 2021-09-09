@@ -24,7 +24,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "app_foc.h"
-
+#include "app_input.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -187,7 +187,8 @@ void PendSV_Handler(void)
 void SysTick_Handler(void)
 {
   /* USER CODE BEGIN SysTick_IRQn 0 */
-
+  get_key(&g_key);
+  get_pulley(&g_pulley);
   /* USER CODE END SysTick_IRQn 0 */
   HAL_IncTick();
   /* USER CODE BEGIN SysTick_IRQn 1 */
@@ -223,7 +224,7 @@ void TIM2_IRQHandler(void)
 {
   /* USER CODE BEGIN TIM2_IRQn 0 */
 //	HAL_GPIO_TogglePin(LED_RZ_GPIO_Port, LED_RZ_Pin);
-  np_foc_control(&np1);
+//  np_foc_control(&np1);
 //	HAL_GPIO_TogglePin(LED_RZ_GPIO_Port, LED_RZ_Pin);
   /* USER CODE END TIM2_IRQn 0 */
   HAL_TIM_IRQHandler(&htim2);

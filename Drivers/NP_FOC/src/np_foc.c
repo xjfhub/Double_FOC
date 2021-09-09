@@ -20,12 +20,6 @@ NP_FOC_typedef np2;
  */
 void np_foc_control(NP_FOC_typedef *np)
 {
-    /** 获取转子相位
-     *  注意：非电机输出轴的角度，需考虑电机极对数
-     */
-    collect_phase(&(np->feedback.phase));
-    /* 获取相电流 */
-    collect_current(&(np->feedback.current));
     /* 根据控制模式控制 */
     switch (np->input.mode)
     {
@@ -84,7 +78,6 @@ void np_foc_control(NP_FOC_typedef *np)
         break;
     }
     }
-    svpwm_out(&(np->output.pwm));
 }
 
 /**

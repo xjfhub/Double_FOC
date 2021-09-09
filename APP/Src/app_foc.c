@@ -22,17 +22,24 @@ float projection(float modulus, float phase)
 {
     return modulus*arm_cos_f32(phase);
 }
-
 /**
- * @brief 初始化电机和控制参数
- *        声明接口变量和函数
- * 
- * @param np 
+ *
  */
-void np_foc_config(NP_FOC_typedef *des, NP_FOC_typedef )
+void get_magnetic_encoder(unsigned int* cnt)
 {
-    mcosine = projection;
-    ;
+	return 0;
+}
+/**
+ * @brief 
+ * 
+ * @param htim 
+ * @param basis 
+ */
+void pwm_output(TIM_HandleTypeDef *htim, output_typedef output)
+{
+	__HAL_TIM_SetCompare(htim, TIM_CHANNEL_1, output.pwm.A);
+	__HAL_TIM_SetCompare(htim, TIM_CHANNEL_2, output.pwm.B);
+	__HAL_TIM_SetCompare(htim, TIM_CHANNEL_3, output.pwm.C);
 }
 /**
  * @brief 
@@ -44,3 +51,12 @@ void np_foc_init(void)
     np_foc_config(&np1);
     np_foc_config(&np2);
 }
+
+
+/** 获取转子相位
+ *  注意：非电机输出轴的角度，需考虑电机极对数
+ */
+//    np->collect_phase(&(np->feedback.phase));
+/* 获取相电流 */
+//    collect_current(&(np->feedback.current));
+//    np->svpwm_out(np->output);

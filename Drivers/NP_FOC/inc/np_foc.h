@@ -56,12 +56,14 @@ typedef struct
 	int direction;	//安装方向
 		//电机正转一圈 编码器旋转的圈数
 		//正值为正转 负值为反转
+		//同轴安装时 值为+-1
+		//侧向安装时 值为+-极对数*2
 	int bias; //偏置值 应由读取值减去偏置再计算角度
 } encoder_typedef;
 
 /**
- * @brief FOC控制变量，默认采用国际标准单位
- * 电机和编码器参数单独设置，可支持不同电机
+ * @brief FOC控制变量，参数如无特殊说明，默认采用国际标准单位
+ * 			一个结构体包含了一路电机控制所需要的所有参数
  */
 typedef struct
 {
@@ -86,11 +88,6 @@ typedef struct
 	basis_typedef expect_current; //期望电流
 	basis_typedef expect_voltage; //期望电压
 	output_typedef output;
-
-	void (*collect_current)(basis_typedef*); //采集电流
-	void (*collect_phase)(float*);			 //采集相位
-	void (*collect_speed)(float*);			 //采集相位
-	void (*svpwm_out)(output_typedef);			 //SVPWM输出
 } NP_FOC_typedef;
 
 /* 控制模式 */
