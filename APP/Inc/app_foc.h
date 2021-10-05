@@ -11,11 +11,14 @@
 #ifndef APP_FOC_H
 #define APP_FOC_H
 #include "main.h"
-#include "np_foc.h"
+#include "foc.h"
 
+extern NP_FOC_typedef np1;
+extern NP_FOC_typedef np2;
 
-void np_foc_init(void);
-void pwm_output(TIM_HandleTypeDef *htim, output_typedef output);
+void get_phase_current(int32_t adc[], triphase_typedef *current1, triphase_typedef *current2);
+void pwm_output(triphase_typedef output1,  triphase_typedef output2);
+void np_foc_init(NP_FOC_typedef *np1, NP_FOC_typedef *np2);
 
 
 #endif

@@ -1,6 +1,16 @@
 {
     "files.associations": {
         "lcd_init.h": "c",
-        "encoder.h": "c"
+        "encoder.h": "c",
+        "app_foc.h": "c",
+        "main.h": "c",
+        "stm32g4xx_hal.h": "c",
+        "stm32g4xx_hal_conf.h": "c",
+        "stm32g4xx_hal_rcc.h": "c",
+        "stm32g4xx_hal_def.h": "c",
+        "arm_math.h": "c",
+        "np_foc.h": "c",
+        "foc_math.h": "c",
+        "foc_pid.h": "c"
     }
 }

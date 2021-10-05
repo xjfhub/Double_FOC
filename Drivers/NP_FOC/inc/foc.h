@@ -8,8 +8,8 @@
 #ifndef NP_FOC_H
 #define NP_FOC_H
 #include "foc_config.h"
-#include "np_foc_pid.h"
-#include "np_foc_math.h"
+#include "foc_math.h"
+#include "foc_pid.h"
 
 /* NP_FOC控制输入量 */
 typedef struct
@@ -27,14 +27,13 @@ typedef struct
 	float angle;		   //角度	范围：0-2π
 	float speed;		   //角速度
 	float phase;		   //电角度	范围：0-2π
-	int adc[3];
-	basis_typedef current; //反馈电流
+	triphase_typedef current; //反馈电流
 } feedback_typedef;
 
 /* NP_FOC控制输出量 */
 typedef struct
 {
-	basis_typedef pwm; //输出PWM
+	triphase_typedef pwm; //输出PWM
 } output_typedef;
 
 /* 电机相关参数 */
@@ -52,13 +51,13 @@ typedef struct
 /* 编码器相关参数 */
 typedef struct
 {
-	int resolution; //分辨率 = 2^编码器位数
-	int direction;	//安装方向
-		//电机正转一圈 编码器旋转的圈数
-		//正值为正转 负值为反转
-		//同轴安装时 值为+-1
-		//侧向安装时 值为+-极对数*2
-	int bias; //偏置值 应由读取值减去偏置再计算角度
+	int resolution; //分辨率
+	/* 电机安装方向
+		定义为电机轴向旋转一周
+		编码器旋转周数 */
+	int direction;	
+	/* 偏置 = 电机转到零点时的读取值 */
+	int bias; 
 } encoder_typedef;
 
 /**
@@ -76,18 +75,16 @@ typedef struct
 	/* 反馈信号 */
 	feedback_typedef feedback;
 	/* NP_FOC控制PID参数 */
-	PID_typedef PID_current_A; //A相电流环PID
-	PID_typedef PID_current_B; //B相电流环PID
-	PID_typedef PID_current_C; //C相电流环PID
-	PID_typedef PID_speed;	   //速度环PID
-	PID_typedef PID_phase;	   //角度环PID
+	triphase_PID_typedef 	PID_current; //电流环PID
+	PID_typedef 			PID_speed;	 //速度环PID
+	PID_typedef 			PID_phase;	 //角度环PID
 	/* NP_FOC控制中间量 */
 	float expect_phase;			  //期望相位
 	float expect_speed;			  //期望速度
 	float expect_torque;		  //期望力矩
-	basis_typedef expect_current; //期望电流
-	basis_typedef expect_voltage; //期望电压
-	output_typedef output;
+	triphase_typedef expect_current; //期望电流
+	triphase_typedef expect_voltage; //期望电压
+	triphase_typedef output_pwm;
 } NP_FOC_typedef;
 
 /* 控制模式 */
@@ -99,7 +96,7 @@ enum MODE
 	ANGLE_MODE,	   //角度控制
 	POWER_MODE	   //功率控制
 };
-extern NP_FOC_typedef np1;
-extern NP_FOC_typedef np2;
+
+void foc_control(int mode, float set, NP_FOC_typedef *np);
 
 #endif

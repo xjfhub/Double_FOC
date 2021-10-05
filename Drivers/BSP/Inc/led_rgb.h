@@ -18,6 +18,6 @@ typedef struct
     uint8_t R;
     uint8_t B;
 }color_typedef;
-void led_set(color_typedef led1, color_typedef led2);
+void led_set(int32_t *adc);
 
 #endif

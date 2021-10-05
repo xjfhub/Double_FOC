@@ -10,8 +10,8 @@
 
 #define QUADRUPLE 0 //AB上升下降都采集 四倍频
 
-key_typedef g_key;
-pulley_typedef g_pulley;
+key_typedef g_key;          //按键结构体
+pulley_typedef g_pulley;    //滚轮结构体
 
 /**
  * @brief 输入端口初始化
@@ -34,12 +34,6 @@ void input_init(void)
  */
 void get_key(key_typedef *key)
 {
-    // static uint8_t new_state = 0;
-    // static uint8_t last_state = 0;
-    // static uint32_t press_time = 0;
-    // static uint32_t last_press_time = 0;
-    // key_typedef key = {0};
-
     //更新按键状态
     key->last_state = key->state;
 
@@ -80,7 +74,7 @@ void get_key(key_typedef *key)
  * 
  * @param pulley 
  */
-void get_pulley(pulley_typedef *pulley)
+void get_pulley(pulley_typedef *pulley) 
 {
     pulley->last_state_a = pulley->state_a;
     pulley->last_state_b = pulley->state_b;

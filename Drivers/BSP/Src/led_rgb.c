@@ -14,9 +14,17 @@
 #include "led_rgb.h"
 
 
-void led_set(color_typedef led1, color_typedef led2)
+void led_set(int32_t *adc)
 {
     int8_t i;
+    color_typedef led1, led2;
+
+	led1.G = (adc[0]>2048)?((adc[0]-2048)/256):0;
+	led1.R = (adc[1]>2048)?((adc[1]-2048)/256):0;
+	led1.B = (adc[2]>2048)?((adc[2]-2048)/256):0;
+	led2.G = (adc[3]>2048)?((adc[3]-2048)/256):0;
+	led2.R = (adc[4]>2048)?((adc[4]-2048)/256):0;
+	led2.B = (adc[5]>2048)?((adc[5]-2048)/256):0;
 
     for(i=7; i>=0; i--)
     {
