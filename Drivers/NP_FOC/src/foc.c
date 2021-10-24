@@ -28,7 +28,7 @@ void foc_control(int mode, float set, NP_FOC_typedef *np)
     case OPEN_LOOP:     
     {
         np->expect_phase = set;
-        np->expect_torque = 0.0;
+        np->expect_torque = 1.2;
         np->expect_current = polar_to_triphase(np->expect_torque,np->expect_phase);
         break;
     }

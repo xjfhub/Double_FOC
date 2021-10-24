@@ -23,19 +23,20 @@
 #include "cordic.h"
 #include "dma.h"
 #include "fdcan.h"
+#include "spi.h"
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "lcd_init.h" //lcd物理�??
-#include "lcd.h"      //lcd驱动�??
-#include "ui.h"		  //应用�??
+#include "lcd_init.h" //lcd物理�???????
+#include "lcd.h"      //lcd驱动�???????
+#include "ui.h"		  //应用�???????
 #include "led_rgb.h"  //彩色led
-#include "arm_math.h" //DSP�??
-#include "app_cordic.h" //cordic加�??  好像并不好使  还不如DSP�??
-#include "app_foc.h"  //foc应用�??
+#include "arm_math.h" //DSP�???????
+#include "app_cordic.h" //cordic加�??  好像并不好使  还不如DSP�???????
+#include "app_foc.h"  //foc应用�???????
 #include "app_input.h"
 #include "app_ano.h"
 
@@ -59,7 +60,7 @@
 
 /* USER CODE BEGIN PV */
 int32_t g_adc_buff[7];  //adc????{IA1,IB1,IC1,IA2,IB2,IC2,VBUS}
-float ano_data[6];
+float ano_data[20];
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -110,6 +111,7 @@ int main(void)
   MX_CORDIC_Init();
   MX_TIM2_Init();
   MX_TIM4_Init();
+  MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
   input_init();
   HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
@@ -126,42 +128,45 @@ int main(void)
   HAL_TIMEx_PWMN_Start(&htim8, TIM_CHANNEL_2);
   HAL_TIMEx_PWMN_Start(&htim8, TIM_CHANNEL_3);
 
-  HAL_TIM_Base_Start_IT(&htim2);	//触发TIM1,TIM8,ADC,定时器中�??
-
-  HAL_ADC_Start_DMA(&hadc1, g_adc_buff, 7); //�???启ADC DMA
+  HAL_ADC_Start_DMA(&hadc1, g_adc_buff, 7); //�????????启ADC DMA
 
   HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_1);
   HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2);
-  __HAL_TIM_SetCompare(&htim4, TIM_CHANNEL_1, 500);	//蜂鸣�???	未使�???
-  __HAL_TIM_SetCompare(&htim4, TIM_CHANNEL_2, 1000);	//显示屏背�???
-  LCD_Init();	//LCD初始�???
+  __HAL_TIM_SetCompare(&htim4, TIM_CHANNEL_1, 500);	//蜂鸣�????????	未使�????????
+  __HAL_TIM_SetCompare(&htim4, TIM_CHANNEL_2, 1000);	//显示屏背�????????
+  LCD_Init();	//LCD初始�????????
   LCD_Fill(0,0,LCD_W,LCD_H,BLACK);
   np_foc_init(&np1,&np2);
+  HAL_TIM_Base_Start_IT(&htim2);	//触发TIM1,TIM8,ADC,定时器中�???????
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	HAL_GPIO_TogglePin(LED_RZ_GPIO_Port, LED_RZ_Pin);
-    get_phase_current(g_adc_buff, &np1.feedback.current, &np2.feedback.current);  //????
-    foc_control(OPEN_LOOP, g_pulley.cnt*0.628, &np1);
-    foc_control(OPEN_LOOP, 0, &np2);
-    pwm_output(np1.output_pwm,  np2.output_pwm);
-	HAL_GPIO_TogglePin(LED_RZ_GPIO_Port, LED_RZ_Pin);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+//	 main_ui(g_adc_buff);
 //	 led_set(g_adc_buff);
-//	main_ui(g_adc_buff);
-	 ano_data[0] = np1.feedback.current.A;
-	 ano_data[1] = np1.feedback.current.B;
-	 ano_data[2] = np1.feedback.current.C;
-	 ano_data[3] = np1.output_pwm.A;
-	 ano_data[4] = np1.output_pwm.B;
-	 ano_data[5] = np1.output_pwm.C;
-	ano_send(ano_data, 6);
-	HAL_Delay(1);
+//	 get_magnetic_encoder(&np1.feedback.encoder_cnt, &np2.feedback.encoder_cnt);
+	 ano_data[0] = np1.expect_current.A;
+	 ano_data[1] = np1.expect_current.B;
+	 ano_data[2] = np1.expect_current.C;
+	 ano_data[3] = np1.output_pwm.A/4000;
+	 ano_data[4] = np1.output_pwm.B/4000;
+	 ano_data[5] = np1.output_pwm.C/4000;
+	 ano_data[6] = np2.feedback.current.A;
+	 ano_data[7] = np2.feedback.current.B;
+	 ano_data[8] = np2.feedback.current.C;
+	 ano_data[9] = np2.output_pwm.A/4000;
+//	 ano_data[10] = np2.output_pwm.B/4000;
+//	 ano_data[11] = np2.output_pwm.C/4000;
+	 ano_data[10] = (float)np1.feedback.encoder_cnt;
+	 ano_data[11] = (float)np2.feedback.encoder_cnt;
+   
+	 ano_send(ano_data, 12);
+	 HAL_Delay(10);
   }
   /* USER CODE END 3 */
 }

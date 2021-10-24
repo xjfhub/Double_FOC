@@ -64,14 +64,12 @@ void Error_Handler(void);
 #define ENC_A_GPIO_Port GPIOC
 #define ENC_B_Pin GPIO_PIN_15
 #define ENC_B_GPIO_Port GPIOC
-#define SSD2_Pin GPIO_PIN_4
-#define SSD2_GPIO_Port GPIOA
-#define SSCK_Pin GPIO_PIN_5
-#define SSCK_GPIO_Port GPIOA
+#define CS2_Pin GPIO_PIN_4
+#define CS2_GPIO_Port GPIOA
 #define LED_RZ_Pin GPIO_PIN_4
 #define LED_RZ_GPIO_Port GPIOC
-#define SSD1_Pin GPIO_PIN_0
-#define SSD1_GPIO_Port GPIOB
+#define CS1_Pin GPIO_PIN_0
+#define CS1_GPIO_Port GPIOB
 #define DC_Pin GPIO_PIN_2
 #define DC_GPIO_Port GPIOB
 #define SDA_Pin GPIO_PIN_10
@@ -79,7 +77,8 @@ void Error_Handler(void);
 #define KEY_EN_Pin GPIO_PIN_6
 #define KEY_EN_GPIO_Port GPIOC
 /* USER CODE BEGIN Private defines */
-
+extern int32_t g_adc_buff[7];  //adc????{IA1,IB1,IC1,IA2,IB2,IC2,VBUS}
+extern float ano_data[20];
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus

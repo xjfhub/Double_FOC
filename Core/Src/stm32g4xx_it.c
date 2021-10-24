@@ -23,6 +23,7 @@
 #include "stm32g4xx_it.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "arm_math.h"
 #include "app_foc.h"
 #include "app_input.h"
 /* USER CODE END Includes */
@@ -223,9 +224,52 @@ void DMA1_Channel1_IRQHandler(void)
 void TIM2_IRQHandler(void)
 {
   /* USER CODE BEGIN TIM2_IRQn 0 */
-//	HAL_GPIO_TogglePin(LED_RZ_GPIO_Port, LED_RZ_Pin);
-//  foc_control(&np1);
-//	HAL_GPIO_TogglePin(LED_RZ_GPIO_Port, LED_RZ_Pin);
+  static float temp=0;
+  static int sec; //扇区
+  static triphase_typedef current_buff[6];
+  static triphase_typedef current_last;
+
+  sec = (sec+1)%6;
+  if(temp<2*PI)
+  {
+    temp += 0.001*g_pulley.cnt;
+  }
+  else
+  {
+    temp = 0;
+  }
+  get_phase_current(g_adc_buff, &np1.feedback.current, &np2.feedback.current);  //????
+  get_magnetic_encoder(&np1.feedback.encoder_cnt, &np2.feedback.encoder_cnt);
+  // foc_control(OPEN_LOOP, g_pulley.cnt*0.628, &np1);
+  current_buff[sec] = np1.feedback.current;
+  np1.output_pwm.A = 4000+2000*arm_cos_f32(temp+PHASE_A)+1000.0*arm_cos_f32(PI*((float)sec+0)/3.0);
+  np1.output_pwm.B = 4000+2000*arm_cos_f32(temp+PHASE_B)+1000.0*arm_cos_f32(PI*((float)sec+2)/3.0);
+  np1.output_pwm.C = 4000+2000*arm_cos_f32(temp+PHASE_C)+1000.0*arm_cos_f32(PI*((float)sec+4)/3.0);
+  switch (sec)
+  {
+  case 0:
+    np1.expect_current.B = np1.expect_current.B + ((current_buff[0].B - current_buff[3].B) - np1.expect_current.B)/16;
+    break;
+  case 1:
+    np1.expect_current.C = np1.expect_current.C + ((current_buff[4].C - current_buff[1].C) - np1.expect_current.C)/16;
+    break;
+  case 2:
+    np1.expect_current.A = np1.expect_current.A + ((current_buff[2].A - current_buff[5].A) - np1.expect_current.A)/16;
+    break;
+  case 3:
+    np1.expect_current.B = np1.expect_current.B + ((current_buff[0].B - current_buff[3].B) - np1.expect_current.B)/16;
+    break;
+  case 4:
+    np1.expect_current.C = np1.expect_current.C + ((current_buff[4].C - current_buff[1].C) - np1.expect_current.C)/16;
+    break;
+  case 5:
+    np1.expect_current.A = np1.expect_current.A + ((current_buff[2].A - current_buff[5].A) - np1.expect_current.A)/16;
+    break;
+  default:
+    break;
+  }
+//  foc_control(OPEN_LOOP, temp, &np2);
+  pwm_output(np1.output_pwm,  np2.output_pwm);
   /* USER CODE END TIM2_IRQn 0 */
   HAL_TIM_IRQHandler(&htim2);
   /* USER CODE BEGIN TIM2_IRQn 1 */
