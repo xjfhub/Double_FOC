@@ -229,46 +229,47 @@ void TIM2_IRQHandler(void)
   static triphase_typedef current_buff[6];
   static triphase_typedef current_last;
 
-  sec = (sec+1)%6;
-  if(temp<2*PI)
-  {
-    temp += 0.001*g_pulley.cnt;
-  }
-  else
-  {
-    temp = 0;
-  }
-  get_phase_current(g_adc_buff, &np1.feedback.current, &np2.feedback.current);  //????
-  get_magnetic_encoder(&np1.feedback.encoder_cnt, &np2.feedback.encoder_cnt);
-  // foc_control(OPEN_LOOP, g_pulley.cnt*0.628, &np1);
-  current_buff[sec] = np1.feedback.current;
-  np1.output_pwm.A = 4000+2000*arm_cos_f32(temp+PHASE_A)+1000.0*arm_cos_f32(PI*((float)sec+0)/3.0);
-  np1.output_pwm.B = 4000+2000*arm_cos_f32(temp+PHASE_B)+1000.0*arm_cos_f32(PI*((float)sec+2)/3.0);
-  np1.output_pwm.C = 4000+2000*arm_cos_f32(temp+PHASE_C)+1000.0*arm_cos_f32(PI*((float)sec+4)/3.0);
-  switch (sec)
-  {
-  case 0:
-    np1.expect_current.B = np1.expect_current.B + ((current_buff[0].B - current_buff[3].B) - np1.expect_current.B)/16;
-    break;
-  case 1:
-    np1.expect_current.C = np1.expect_current.C + ((current_buff[4].C - current_buff[1].C) - np1.expect_current.C)/16;
-    break;
-  case 2:
-    np1.expect_current.A = np1.expect_current.A + ((current_buff[2].A - current_buff[5].A) - np1.expect_current.A)/16;
-    break;
-  case 3:
-    np1.expect_current.B = np1.expect_current.B + ((current_buff[0].B - current_buff[3].B) - np1.expect_current.B)/16;
-    break;
-  case 4:
-    np1.expect_current.C = np1.expect_current.C + ((current_buff[4].C - current_buff[1].C) - np1.expect_current.C)/16;
-    break;
-  case 5:
-    np1.expect_current.A = np1.expect_current.A + ((current_buff[2].A - current_buff[5].A) - np1.expect_current.A)/16;
-    break;
-  default:
-    break;
-  }
-//  foc_control(OPEN_LOOP, temp, &np2);
+
+//  sec = (sec+1)%6;
+//  if(temp<2*PI)
+//  {
+//    temp += 0.001*g_pulley.cnt;
+//  }
+//  else
+//  {
+//    temp = 0;
+//  }
+//  current_buff[sec] = np1.feedback.current;
+//  np1.output_pwm.A = 4000+2000*arm_cos_f32(temp+PHASE_A)+1000.0*arm_cos_f32(PI*((float)sec+0)/3.0);
+//  np1.output_pwm.B = 4000+2000*arm_cos_f32(temp+PHASE_B)+1000.0*arm_cos_f32(PI*((float)sec+2)/3.0);
+//  np1.output_pwm.C = 4000+2000*arm_cos_f32(temp+PHASE_C)+1000.0*arm_cos_f32(PI*((float)sec+4)/3.0);
+//  switch (sec)
+//  {
+//  case 0:
+//    np1.expect_current.B = np1.expect_current.B + ((current_buff[0].B - current_buff[3].B) - np1.expect_current.B)/16;
+//    break;
+//  case 1:
+//    np1.expect_current.C = np1.expect_current.C + ((current_buff[4].C - current_buff[1].C) - np1.expect_current.C)/16;
+//    break;
+//  case 2:
+//    np1.expect_current.A = np1.expect_current.A + ((current_buff[2].A - current_buff[5].A) - np1.expect_current.A)/16;
+//    break;
+//  case 3:
+//    np1.expect_current.B = np1.expect_current.B + ((current_buff[0].B - current_buff[3].B) - np1.expect_current.B)/16;
+//    break;
+//  case 4:
+//    np1.expect_current.C = np1.expect_current.C + ((current_buff[4].C - current_buff[1].C) - np1.expect_current.C)/16;
+//    break;
+//  case 5:
+//    np1.expect_current.A = np1.expect_current.A + ((current_buff[2].A - current_buff[5].A) - np1.expect_current.A)/16;
+//    break;
+//  default:
+//    break;
+//  }
+//  foc_control(OPEN_LOOP, (np2.feedback.encoder_cnt%4096)/4096.0*6.28, &np1);
+//  foc_control(OPEN_LOOP, (np1.feedback.encoder_cnt%4096)/4096.0*6.2832, &np2);
+  get_feedback(g_adc_buff, &np1.feedback, &np2.feedback);
+  foc_control(TORQUE_MODE, (np1.feedback.motion_state.cnt)/1024.0-4.0, &np2);
   pwm_output(np1.output_pwm,  np2.output_pwm);
   /* USER CODE END TIM2_IRQn 0 */
   HAL_TIM_IRQHandler(&htim2);

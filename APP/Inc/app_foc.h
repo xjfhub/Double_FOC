@@ -16,9 +16,11 @@
 extern NP_FOC_typedef np1;
 extern NP_FOC_typedef np2;
 
-void get_phase_current(int32_t adc[], triphase_typedef *current1, triphase_typedef *current2);
-void pwm_output(triphase_typedef output1,  triphase_typedef output2);
+//void get_phase_current(int32_t adc[], triphase_typedef *current1, triphase_typedef *current2);
+//void get_magnetic_encoder(unsigned int* cnt1, unsigned int* cnt2);
 void np_foc_init(NP_FOC_typedef *np1, NP_FOC_typedef *np2);
+void get_feedback(int32_t adc[], feedback_typedef *fb1, feedback_typedef *fb2);
+void pwm_output(triphase_typedef output1,  triphase_typedef output2);
 
 
 #endif

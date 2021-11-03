@@ -47,7 +47,7 @@ typedef struct
     float out_max;       //输出最大值
 } triphase_PID_typedef;
 
-float np_foc_pid(float input, float feedback, PID_typedef *PID);
+float pid(float input, float feedback, PID_typedef *PID);
 triphase_typedef triphase_pid(triphase_typedef input, triphase_typedef feedback, triphase_PID_typedef *PID);
 
 #endif

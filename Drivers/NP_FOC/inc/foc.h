@@ -20,13 +20,18 @@ typedef struct
 	float torque; //输入扭矩	电机输出扭矩	单位：Nm
 } input_typedef;
 
+/* 运动状态 */
+typedef struct
+{
+	int cnt;	//编码器值
+	float angle;	//输出轴角度
+	float speed;	//角速度
+	float phase;	//相位
+} motion_state_typedef;
 /* NP_FOC控制反馈量 */
 typedef struct
 {
-	int encoder_cnt;
-	float angle;		   //角度	范围：0-2π
-	float speed;		   //角速度
-	float phase;		   //电角度	范围：0-2π
+	motion_state_typedef motion_state;	//运动状态
 	triphase_typedef current; //反馈电流
 } feedback_typedef;
 

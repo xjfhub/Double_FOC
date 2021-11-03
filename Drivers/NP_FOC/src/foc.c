@@ -28,7 +28,7 @@ void foc_control(int mode, float set, NP_FOC_typedef *np)
     case OPEN_LOOP:     
     {
         np->expect_phase = set;
-        np->expect_torque = 1.2;
+        np->expect_torque = 0.8;
         np->expect_current = polar_to_triphase(np->expect_torque,np->expect_phase);
         break;
     }
@@ -36,22 +36,22 @@ void foc_control(int mode, float set, NP_FOC_typedef *np)
     case TORQUE_MODE:
     {
         np->expect_torque = set;
-        np->expect_phase = np->feedback.phase+PI/2;
+        np->expect_phase = np->feedback.motion_state.phase+PI/2;
         np->expect_current = polar_to_triphase(np->expect_torque,np->expect_phase);
         break;
     }
     /* 速度控制模式 */
     case SPEED_MODE:
     {
-        np->expect_phase = np->feedback.phase+PI/2;
-        np->expect_torque = pid(np->input.speed, np->feedback.speed, &(np->PID_phase));//补充速度计算函数
+        np->expect_phase = np->feedback.motion_state.phase+PI/2;
+        np->expect_torque = pid(np->input.speed, np->feedback.motion_state.speed, &(np->PID_phase));//补充速度计算函数
         np->expect_current = polar_to_triphase(np->expect_torque,np->expect_phase);
         break;
     }
     case ANGLE_MODE:    //角度控制模式
     {
-        np->expect_phase = np->feedback.phase+PI/2;
-        np->expect_torque = pid(np->input.angle, np->feedback.angle, &(np->PID_phase));
+        np->expect_phase = np->feedback.motion_state.phase+PI/2;
+        np->expect_torque = pid(np->input.angle, np->feedback.motion_state.angle, &(np->PID_phase));
         np->expect_current = polar_to_triphase(np->expect_torque,np->expect_phase);
         break;
     }
