@@ -32,12 +32,12 @@ void cordic_set(void)
     HAL_CORDIC_Configure(&hcordic, &CORDIC_ConfigStruct);
 }
 
-float cordic_cosine_f32(float modulus, float phase)
+float cordic_cosine_f32(float amplitude, float phase)
 {
     uint32_t InBuff;
     uint32_t OutBuff;
 
-    InBuff = ( ((int32_t)(modulus*32768.0))<<16 ) | ((int32_t)(phase*10430.38));
+    InBuff = ( ((int32_t)(amplitude*32768.0))<<16 ) | ((int32_t)(phase*10430.38));
 
     WRITE_REG(hcordic.Instance->WDATA, InBuff);
     OutBuff = (int32_t)READ_REG(hcordic.Instance->RDATA);

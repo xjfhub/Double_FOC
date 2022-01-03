@@ -30,13 +30,13 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "lcd_init.h" //lcd物理�???????
-#include "lcd.h"      //lcd驱动�???????
-#include "ui.h"		  //应用�???????
+#include "lcd_init.h" //lcd物理�????????
+#include "lcd.h"      //lcd驱动�????????
+#include "ui.h"		  //应用�????????
 #include "led_rgb.h"  //彩色led
-#include "arm_math.h" //DSP�???????
-#include "app_cordic.h" //cordic加�??  好像并不好使  还不如DSP�???????
-#include "app_foc.h"  //foc应用�???????
+#include "arm_math.h" //DSP�????????
+#include "app_cordic.h" //cordic加�??  好像并不好使  还不如DSP�????????
+#include "app_foc.h"  //foc应用�????????
 #include "app_input.h"
 #include "app_ano.h"
 
@@ -128,16 +128,17 @@ int main(void)
   HAL_TIMEx_PWMN_Start(&htim8, TIM_CHANNEL_2);
   HAL_TIMEx_PWMN_Start(&htim8, TIM_CHANNEL_3);
 
-  HAL_ADC_Start_DMA(&hadc1, g_adc_buff, 7); //�????????启ADC DMA
+  HAL_ADC_Start_DMA(&hadc1, g_adc_buff, 7); //�?????????启ADC DMA
 
   HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_1);
   HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2);
-  __HAL_TIM_SetCompare(&htim4, TIM_CHANNEL_1, 500);	//蜂鸣�????????	未使�????????
-  __HAL_TIM_SetCompare(&htim4, TIM_CHANNEL_2, 1000);	//显示屏背�????????
-  LCD_Init();	//LCD初始�????????
+  __HAL_TIM_SetCompare(&htim4, TIM_CHANNEL_1, 500);	//蜂鸣�?????????	未使�?????????
+  __HAL_TIM_SetCompare(&htim4, TIM_CHANNEL_2, 1000);	//显示屏背�?????????
+  LCD_Init();	//LCD初始�?????????
   LCD_Fill(0,0,LCD_W,LCD_H,BLACK);
+  main_ui(g_adc_buff);
   np_foc_init(&np1,&np2);
-  HAL_TIM_Base_Start_IT(&htim2);	//触发TIM1,TIM8,ADC,定时器中�???????
+  HAL_TIM_Base_Start_IT(&htim2);	//触发TIM1,TIM8,ADC,定时器中�????????
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -147,7 +148,6 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-//	 main_ui(g_adc_buff);
 //	 led_set(g_adc_buff);
 //	 get_magnetic_encoder(&np1.feedback.encoder_cnt, &np2.feedback.encoder_cnt);
 //	 ano_data[0] = np2.feedback.motion_state.angle;
@@ -162,12 +162,12 @@ int main(void)
 	 ano_data[6] = np2.output_pwm.A/4000;
 	 ano_data[7] = np2.output_pwm.B/4000;
 	 ano_data[8] = np2.output_pwm.C/4000;
-	 ano_data[9] = (float)np1.feedback.motion_state.cnt/16384.0;
-	 ano_data[10] = (float)np2.feedback.motion_state.cnt/16384.0;
+	 ano_data[9] = (float)np1.feedback.motion_state.speed;
+	 ano_data[10] = (float)np2.feedback.motion_state.speed;
 	 ano_data[11] = g_adc_buff[6]/4096.0;
 
 	 ano_send(ano_data, 12);
-	 HAL_Delay(10);
+//	 HAL_Delay(10);
   }
   /* USER CODE END 3 */
 }

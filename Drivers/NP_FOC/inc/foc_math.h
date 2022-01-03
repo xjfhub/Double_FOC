@@ -24,18 +24,19 @@ typedef struct
 	float A; //0
 	float B; //2π/3
 	float C; //4π/3
+//	float modulus;
 } triphase_typedef;
 
 /* 角度表示法 */
 typedef struct
 {
-	float modulus;
-	float phase;
+	float amplitude;		//幅度
+	float phase;			//相位
 } polar_typedef;
 
 extern float (*msine)(float, float);			//正弦函数
 extern float (*mcosine)(float, float);		//余弦函数
 
-triphase_typedef polar_to_triphase(float modulus, float phase);
+triphase_typedef polar_to_triphase(float amplitude, float phase);
 
 #endif

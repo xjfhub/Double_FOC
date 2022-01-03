@@ -20,13 +20,13 @@ NP_FOC_typedef np2;
 /**
  * @brief 取模的投影函数
  * 
- * @param modulus 模长
+ * @param amplitude 模长
  * @param angle 模相位
  * @return float 模的投影
  */
-float projection(float modulus, float angle)
+float projection(float amplitude, float angle)
 {
-    return modulus*arm_cos_f32(angle);
+    return amplitude*arm_cos_f32(angle);
 }
 /**
  * @brief
@@ -36,15 +36,15 @@ void np_foc_init(NP_FOC_typedef *np1, NP_FOC_typedef *np2)
 {
     mcosine = projection;
     /* 电流环参数 */
-    np1->PID_current.kp = 30;
-    np1->PID_current.ki = 30;
+    np1->PID_current.kp = 200;
+    np1->PID_current.ki = 200;
     np1->PID_current.kd = 0;
     np1->PID_current.dt = 0.0001;
     np1->PID_current.out_max =  1.8;
     np1->PID_current.out_min = -1.8;
 
-    np2->PID_current.kp = 30;
-    np2->PID_current.ki = 30;
+    np2->PID_current.kp = 200;
+    np2->PID_current.ki = 200;
     np2->PID_current.kd = 0;
     np2->PID_current.dt = 0.0001;
     np2->PID_current.out_max =  1.8;
@@ -55,7 +55,7 @@ void np_foc_init(NP_FOC_typedef *np1, NP_FOC_typedef *np2)
  * 
  * @param cnt 
  */
-void get_magnetic_encoder(unsigned int* cnt1, unsigned int* cnt2)
+void get_magnetic_encoder(int* cnt1, int* cnt2)
 {
     int data1, data2;
     uint8_t spi_data1[2], spi_data2[2];
@@ -74,40 +74,52 @@ void get_magnetic_encoder(unsigned int* cnt1, unsigned int* cnt2)
     *cnt2 = ((((spi_data2[1] & 0x3f) << 8) | spi_data2[0]) + 7226)%16284;
 }
 /**
- * @brief 获取相电流
+ * @brief 获取相电流,并进行差分和取模运算
  * 
  */
 void get_phase_current(int32_t adc[], triphase_typedef *current1, triphase_typedef *current2)
 {
-    current1->A = (adc[0]*2 - adc[1] - adc[2])*3.2/4096;
-    current1->B = (adc[1]*2 - adc[2] - adc[0])*3.2/4096;
-    current1->C = (adc[2]*2 - adc[0] - adc[1])*3.2/4096;
-    current2->A = (adc[3]*2 - adc[4] - adc[5])*3.2/4096;
-    current2->B = (adc[4]*2 - adc[5] - adc[3])*3.2/4096;
-    current2->C = (adc[5]*2 - adc[3] - adc[4])*3.2/4096;
+    current1->A = (adc[0]*2 - adc[1] - adc[2])*3.2/6144;
+    current1->B = (adc[1]*2 - adc[2] - adc[0])*3.2/6144;
+    current1->C = (adc[2]*2 - adc[0] - adc[1])*3.2/6144;
+//    arm_sqrt_f32(	(current1->A*current1->A
+//                 	 +current1->B*current1->B
+//					 +current1->C*current1->C)*2/3,
+//    					&current1->modulus);
+    current2->A = (adc[3]*2 - adc[4] - adc[5])*3.2/6144;
+    current2->B = (adc[4]*2 - adc[5] - adc[3])*3.2/6144;
+    current2->C = (adc[5]*2 - adc[3] - adc[4])*3.2/6144;
+//    arm_sqrt_f32(	(current2->A*current2->A
+//				 	 +current2->B*current2->B
+//					 +current2->C*current2->C)*2/3,
+//						&current2->modulus);
 }
 /**
  * 获取反馈量
  */
 void get_feedback(int32_t adc[], feedback_typedef *fb1, feedback_typedef *fb2)
 {
-	static angle1_last, angle2_last;
-	static speed1_last, speed2_last;
+	static int cnt1_last, cnt2_last;
+	static float speed1_last, speed2_last;
 
 	get_phase_current(adc, &fb1->current, &fb2->current);
 	get_magnetic_encoder(&fb1->motion_state.cnt, &fb2->motion_state.cnt);
 
-	angle1_last = fb1->motion_state.angle;
-	speed1_last = fb1->motion_state.speed;
 	fb1->motion_state.angle = fb1->motion_state.cnt/16384.0*6.28;
 	fb1->motion_state.phase = (fb1->motion_state.cnt%4096)/4096.0*6.28;
-	fb1->motion_state.speed += (((fb1->motion_state.angle - angle1_last)/0.0001)-speed1_last)/1;
+	fb1->motion_state.speed += ( ( ((int)(fb1->motion_state.cnt + 24576- cnt1_last)%16384 - 8192)/16384.0*(6.28/0.0001) )
+								-speed1_last) /128;
+	cnt1_last = fb1->motion_state.cnt;
+	speed1_last = fb1->motion_state.speed;
+//	fb1->motion_state.speed = (fb1->motion_state.angle - angle1_last)/0.0001;
 
-	angle2_last = fb2->motion_state.angle;
-	speed2_last = fb2->motion_state.speed;
 	fb2->motion_state.angle = fb2->motion_state.cnt/16384.0*6.28;
 	fb2->motion_state.phase = (fb2->motion_state.cnt%4096)/4096.0*6.28;
-	fb2->motion_state.speed += (((fb2->motion_state.angle - angle2_last)/0.0001)-speed2_last)/1;
+	fb2->motion_state.speed += ( ( ((int)(fb2->motion_state.cnt + 24576- cnt2_last)%16384 - 8192)/16384.0*(6.28/0.0001) )
+								-speed2_last) /128;
+	cnt2_last = fb2->motion_state.cnt;
+	speed2_last = fb2->motion_state.speed;
+//	fb2->motion_state.speed = (fb2->motion_state.angle - angle2_last)/0.0001;
 }
 /**
  * @brief 

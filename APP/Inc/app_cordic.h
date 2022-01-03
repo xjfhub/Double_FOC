@@ -13,7 +13,7 @@
 #include "main.h"
 
 void cordic_set(void);
-float cordic_cosine_f32(float modulus, float phase);
+float cordic_cosine_f32(float amplitude, float phase);
 
 
 #endif

@@ -16,11 +16,11 @@ float (*mcosine)(float, float);
  * @param {triphase_typedef} basis
  * @return {*}
  */
-triphase_typedef polar_to_triphase(float modulus, float phase)
+triphase_typedef polar_to_triphase(float amplitude, float phase)
 {
     triphase_typedef basis;
-    basis.A = mcosine(modulus, phase+PHASE_A);
-    basis.B = mcosine(modulus, phase+PHASE_B);
-    basis.C = mcosine(modulus, phase+PHASE_C);
+    basis.A = mcosine(amplitude, phase+PHASE_A);
+    basis.B = mcosine(amplitude, phase+PHASE_B);
+    basis.C = mcosine(amplitude, phase+PHASE_C);
     return basis;
 }
