@@ -49,6 +49,34 @@ void np_foc_init(NP_FOC_typedef *np1, NP_FOC_typedef *np2)
     np2->PID_current.dt = 0.0001;
     np2->PID_current.out_max =  1.8;
     np2->PID_current.out_min = -1.8;
+    /* 速度环参数 */
+    np1->PID_speed.kp = 200;
+    np1->PID_speed.ki = 0;
+    np1->PID_speed.kd = 0;
+    np1->PID_speed.dt = 0.0001;
+    np1->PID_speed.out_max =  1.8;
+    np1->PID_speed.out_min = -1.8;
+
+    np2->PID_speed.kp = 200;
+    np2->PID_speed.ki = 0;
+    np2->PID_speed.kd = 0;
+    np2->PID_speed.dt = 0.0001;
+    np2->PID_speed.out_max =  1.8;
+    np2->PID_speed.out_min = -1.8;
+    /* 位置环参数 */
+    np1->PID_phase.kp = 5;
+    np1->PID_phase.ki = 50;
+    np1->PID_phase.kd = 0;
+    np1->PID_phase.dt = 0.0001;
+    np1->PID_phase.out_max =  1.8;
+    np1->PID_phase.out_min = -1.8;
+
+    np2->PID_phase.kp = 5;
+    np2->PID_phase.ki = 50;
+    np2->PID_phase.kd = 0;
+    np2->PID_phase.dt = 0.0001;
+    np2->PID_phase.out_max =  1.8;
+    np2->PID_phase.out_min = -1.8;
 }
 /**
  * @brief 获取磁编码器数据
@@ -102,9 +130,10 @@ void get_feedback(int32_t adc[], feedback_typedef *fb1, feedback_typedef *fb2)
 	static int cnt1_last, cnt2_last;
 	static float speed1_last, speed2_last;
 
+	/* 读取相电流和编码器数据 */
 	get_phase_current(adc, &fb1->current, &fb2->current);
 	get_magnetic_encoder(&fb1->motion_state.cnt, &fb2->motion_state.cnt);
-
+	/* 计算电机机械角度，电角度，和角速度*/
 	fb1->motion_state.angle = fb1->motion_state.cnt/16384.0*6.28;
 	fb1->motion_state.phase = (fb1->motion_state.cnt%4096)/4096.0*6.28;
 	fb1->motion_state.speed += ( ( ((int)(fb1->motion_state.cnt + 24576- cnt1_last)%16384 - 8192)/16384.0*(6.28/0.0001) )

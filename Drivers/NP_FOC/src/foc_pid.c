@@ -32,7 +32,7 @@ float pid(float input, float feedback, PID_typedef *PID)
                 + PID->ki*(PID->err*PID->dt)*   \
                     (   (PID->err>0)?  \
                         ((PID->out_max-PID->output)/(PID->out_max-PID->out_min)):   \
-                        ((PID->output-PID->out_min)/(PID->out_max-PID->out_min))    );
+                        ((PID->output-PID->out_min)/(PID->out_max-PID->out_min))    )
                 + PID->kp*(PID->err - PID->err_last) 
                 + PID->kd*((PID->err - 2*PID->err_last + PID->err_last_last)/PID->dt);
     PID->output = LIMIT(PID->output, PID->out_min, PID->out_max);

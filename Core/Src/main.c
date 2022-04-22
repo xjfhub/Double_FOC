@@ -59,7 +59,9 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
+int32_t g_foc_cnt = 0;
 int32_t g_adc_buff[7];  //adc????{IA1,IB1,IC1,IA2,IB2,IC2,VBUS}
+int8_t g_ano_flag = 0;
 float ano_data[20];
 /* USER CODE END PV */
 
@@ -149,24 +151,23 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
 //	 led_set(g_adc_buff);
-//	 get_magnetic_encoder(&np1.feedback.encoder_cnt, &np2.feedback.encoder_cnt);
-//	 ano_data[0] = np2.feedback.motion_state.angle;
-//	 ano_data[1] = np2.feedback.motion_state.phase;
-//	 ano_data[2] = np2.feedback.motion_state.speed;
-	 ano_data[0] = np2.expect_current.A;
-	 ano_data[1] = np2.expect_current.B;
-	 ano_data[2] = np2.expect_current.C;
-	 ano_data[3] = np2.feedback.current.A;
-	 ano_data[4] = np2.feedback.current.B;
-	 ano_data[5] = np2.feedback.current.C;
-	 ano_data[6] = np2.output_pwm.A/4000;
-	 ano_data[7] = np2.output_pwm.B/4000;
-	 ano_data[8] = np2.output_pwm.C/4000;
-	 ano_data[9] = (float)np1.feedback.motion_state.speed;
-	 ano_data[10] = (float)np2.feedback.motion_state.speed;
-	 ano_data[11] = g_adc_buff[6]/4096.0;
 
-	 ano_send(ano_data, 12);
+#if 1
+	 if(g_ano_flag != 0)
+	 {
+		 g_ano_flag = 0;
+		 ano_data[0] = np2.expect_current.A;
+		 ano_data[1] = np2.expect_current.B;
+		 ano_data[2] = np2.expect_current.C;
+		 ano_data[3] = np2.feedback.current.A;
+		 ano_data[4] = np2.feedback.current.B;
+		 ano_data[5] = np2.feedback.current.C;
+		 ano_data[6] = (float)np2.feedback.motion_state.angle;
+		 ano_data[7] = (float)np2.feedback.motion_state.speed;
+
+		 ano_send(ano_data, 8);
+	 }
+#endif
 //	 HAL_Delay(10);
   }
   /* USER CODE END 3 */
