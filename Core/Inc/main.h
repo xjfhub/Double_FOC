@@ -77,7 +77,9 @@ void Error_Handler(void);
 #define KEY_EN_Pin GPIO_PIN_6
 #define KEY_EN_GPIO_Port GPIOC
 /* USER CODE BEGIN Private defines */
+extern int32_t g_foc_cnt;
 extern int32_t g_adc_buff[7];  //adc????{IA1,IB1,IC1,IA2,IB2,IC2,VBUS}
+extern int8_t g_ano_flag;
 extern float ano_data[20];
 /* USER CODE END Private defines */
 

@@ -50,7 +50,16 @@ void foc_control(int mode, float set, NP_FOC_typedef *np)
     }
     case ANGLE_MODE:    //角度控制模式
     {
+    	np->input.angle = set;
         np->expect_phase = np->feedback.motion_state.phase+PI/2;
+        if((np->input.angle - np->feedback.motion_state.angle) > PI)
+        {
+        	np->input.angle -= 2*PI;
+        }
+        if((np->input.angle - np->feedback.motion_state.angle) < -PI)
+        {
+        	np->input.angle += 2*PI;
+        }
         np->expect_torque = pid(np->input.angle, np->feedback.motion_state.angle, &(np->PID_phase));
         np->expect_current = polar_to_triphase(np->expect_torque,np->expect_phase);
         break;

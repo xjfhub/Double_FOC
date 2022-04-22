@@ -229,15 +229,12 @@ void TIM2_IRQHandler(void)
   static triphase_typedef current_buff[6];
   static triphase_typedef current_last;
 
+  g_foc_cnt ++;
+  if(g_foc_cnt%25 == 0)
+  {
+	 g_ano_flag = 1;
+  }
 
-//  if(temp<2*PI)
-//  {
-//    temp += 0.001*g_pulley.cnt;
-//  }
-//  else
-//  {
-//    temp = 0;
-//  }
 /*�?单高频注入程�?*/
 //  sec = (sec+1)%6;
 //  current_buff[sec] = np1.feedback.current;
@@ -270,7 +267,12 @@ void TIM2_IRQHandler(void)
 //  foc_control(OPEN_LOOP, (np2.feedback.encoder_cnt%4096)/4096.0*6.28, &np1);
 //  foc_control(OPEN_LOOP, (np1.feedback.encoder_cnt%4096)/4096.0*6.2832, &np2);
   get_feedback(g_adc_buff, &np1.feedback, &np2.feedback);
-  foc_control(TORQUE_MODE, (np1.feedback.motion_state.cnt)/4096.0-2.0, &np2);
+  foc_control(ANGLE_MODE, np1.feedback.motion_state.angle, &np2);
+//#define V 400
+//#define P 1500
+//  np2.output_pwm.A = 4000 + V*arm_cos_f32((g_foc_cnt%P)*2*PI/P + PHASE_A);
+//  np2.output_pwm.B = 4000 + V*arm_cos_f32((g_foc_cnt%P)*2*PI/P + PHASE_B);
+//  np2.output_pwm.C = 4000 + V*arm_cos_f32((g_foc_cnt%P)*2*PI/P + PHASE_C);
   pwm_output(np1.output_pwm,  np2.output_pwm);
   /* USER CODE END TIM2_IRQn 0 */
   HAL_TIM_IRQHandler(&htim2);
