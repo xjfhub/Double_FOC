@@ -1,5 +1,2 @@
-
-## 待处理
-* 添加匿名通信程序
-* DMA中断两次问题待解决
-*  
+# I基于STM32G431的双路FOC控制器
+硬件地址：https://oshwhub.com/xue_jingfei/foc_pro
